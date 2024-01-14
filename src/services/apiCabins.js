@@ -8,10 +8,8 @@ export async function getCabins() {
 
   return data;
 }
-//https://qvnsflyuonkzlhsuuxtu.supabase.co/storage/v1/object/public/cabins/cabin-001.jpg
 
 export async function createEditCabin(data, id) {
-  console.log(data, id);
   const hasImage = data.image?.startsWith?.(supabaseUrl);
 
   const imageName = `${Math.random()}-${data.image.name}`.replaceAll('/', '');
@@ -32,6 +30,7 @@ export async function createEditCabin(data, id) {
 
   if (error) throw new Error('Could not create cabin');
 
+  if (hasImage) return data;
   const { error: imageError } = await supabase.storage
     .from('cabins')
     .upload(imageName, data.image);
