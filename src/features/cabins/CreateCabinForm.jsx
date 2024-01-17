@@ -9,7 +9,7 @@ import FileInput from '../../ui/FileInput';
 import { useEditCabin } from './useEditCabin';
 import { useCreateCabin } from './useCreateCabin';
 
-function CreateCabinForm({ editCabin = {} }) {
+function CreateCabinForm({ editCabin = {}, onCloseModal }) {
   const { id: editCabinID, ...editCabinData } = editCabin;
   const isEditSession = Boolean(editCabinID);
 
@@ -30,20 +30,29 @@ function CreateCabinForm({ editCabin = {} }) {
       mutateEditCabin(
         { newCabinData: { ...data, image }, id: editCabinID },
         {
-          onSuccess: () => reset(),
+          onSuccess: () => {
+            reset();
+            onCloseModal?.();
+          },
         }
       );
     else
       mutateCreateCabin(
         { ...data, image: image },
         {
-          onSuccess: (data) => reset(),
+          onSuccess: (data) => {
+            reset();
+            onCloseModal?.();
+          },
         }
       );
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit)}
+      type={onCloseModal ? 'modal' : 'regular'}
+    >
       <FormRow label='Cabin name' errors={errors?.name?.message}>
         <Input
           type='text'
@@ -115,7 +124,11 @@ function CreateCabinForm({ editCabin = {} }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation='secondary' type='reset'>
+        <Button
+          variation='secondary'
+          type='reset'
+          onClick={() => onCloseModal?.()}
+        >
           Cancel
         </Button>
         <Button disabled={isDoing}>
