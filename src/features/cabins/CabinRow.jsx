@@ -3,12 +3,13 @@ import { HiSquare2Stack } from 'react-icons/hi2';
 import { HiPencil } from 'react-icons/hi2';
 import { HiTrash } from 'react-icons/hi2';
 
-import { useState } from 'react';
 import { formatCurrency } from '../../utils/helpers';
 import CreateCabinForm from './CreateCabinForm';
 
 import { useDeleteCabin } from './useDeleteCabins';
 import { useCreateCabin } from './useCreateCabin';
+import Modal from '../../ui/Modal';
+import ConfrimDelete from '../../ui/ConfirmDelete';
 
 const TableRow = styled.div`
   display: grid;
@@ -50,7 +51,6 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const [editing, setEditing] = useState(false);
   const { isLoading, mutate } = useDeleteCabin();
   const { isCreating, mutateCreateCabin } = useCreateCabin();
 
@@ -91,15 +91,31 @@ function CabinRow({ cabin }) {
           <button onClick={handleDuplicate}>
             <HiSquare2Stack />
           </button>
-          <button onClick={() => setEditing((edit) => !edit)}>
-            <HiPencil />
-          </button>
-          <button onClick={() => mutate(cabinId)} disabled={isLoading}>
-            <HiTrash />
-          </button>
+          <Modal>
+            <Modal.Open opens='edit'>
+              <button>
+                <HiPencil />
+              </button>
+            </Modal.Open>
+            <Modal.Window name='edit'>
+              <CreateCabinForm editCabin={cabin} />
+            </Modal.Window>
+
+            <Modal.Open opens='delete'>
+              <button>
+                <HiTrash />
+              </button>
+            </Modal.Open>
+            <Modal.Window name='delete'>
+              <ConfrimDelete
+                resourceName='cabins'
+                disabled={isLoading}
+                onConfirm={() => mutate(cabinId)}
+              />
+            </Modal.Window>
+          </Modal>
         </div>
       </TableRow>
-      {editing && <CreateCabinForm editCabin={cabin} />}
     </>
   );
 }

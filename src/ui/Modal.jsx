@@ -92,7 +92,7 @@ function Window({ children, name }) {
         <Button onClick={onClose}>
           <HiXMark />
         </Button>
-        {cloneElement(children, { onCloseModal: onClose })}
+        <div> {cloneElement(children, { onCloseModal: onClose })}</div>
       </StyledModal>
     </Overlay>,
     document.body
